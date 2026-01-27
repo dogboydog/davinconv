@@ -1,7 +1,7 @@
 # Davinconv - video converter for Davinci Resolve on Linux
 Simple script written in bash to convert videos using `ffmpeg` to the format supported by Davinci Resolve for Linux.
 
-I recommend watching [tihs video](https://www.youtube.com/watch?v=WLcW4UWPC5Y) before using the script.
+I recommend watching [this video](https://www.youtube.com/watch?v=WLcW4UWPC5Y) before using the script.
 ## Installing
 ### Install Davinconv manually with `make`
 - First, download and install `git` and `make` usnig your **package manager**.
