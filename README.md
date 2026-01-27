@@ -70,8 +70,8 @@ sudo pacman -Rsnu davinconv
 Usage: davinconv [-c|C|e|E|h|R]
 
 Options:
-  {-c} [file]    - Convert video to the MJPEG codec that can be read by Davinci Resolve.
-  {-C}           - Convert all videos in current directory to the MJPEG codec that can be read by Davinci Resolve.
+  {-c} [file]    - Convert video to the ProRes codec that can be read by Davinci Resolve.
+  {-C}           - Convert all videos in current directory to the ProRes codec that can be read by Davinci Resolve.
   {-e} [file]    - Export converted video back to the H264 codec.
   {-E}           - Export all converted videos stored in ~/Videos/davinconv/converted back to the H264 codec.
   {-h}           - Display this message.

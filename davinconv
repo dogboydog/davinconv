@@ -20,8 +20,8 @@ Help() {
     echo "Usage: davinconv [-c|C|e|E|h|R]"
     echo ""
     echo "Options:"
-    echo "   {-c} [file]    - Convert video to the MJPEG codec that can be read by Davinci Resolve."
-    echo "   {-C}           - Convert all videos in current directory to the MJPEG codec that can be read by Davinci Resolve."
+    echo "   {-c} [file]    - Convert video to ProRes codec that can be read by Davinci Resolve."
+    echo "   {-C}           - Convert all videos in current directory to ProRes codec that can be read by Davinci Resolve."
     echo "   {-e} [file]    - Export converted video back to the H264 codec."
     echo "   {-E}           - Export all converted videos stored in $VIDDIR/converted back to the H264 codec."
     echo "   {-h}           - Display this message."
@@ -36,14 +36,35 @@ Help() {
 }
 
 Convert() {
-    ffmpeg -i "$i" -vcodec mjpeg -q:v 2 -acodec pcm_s16be -q:a 0 -f mov "$VIDDIR"/converted/${i%.*}.mov
+    local i="$1"
+
+    pixfmt=$(ffprobe -v error -select_streams v:0 \
+        -show_entries stream=pix_fmt -of csv=p=0 "$i")
+
+    if [[ "$pixfmt" == *"yuva"* || "$pixfmt" == *"rgba"* ]]; then
+        if [[ "$pixfmt" == *"12"* && "$i" == *.mov ]]; then
+            ffmpeg -i "$i" -c:v copy -c:a copy "$VIDDIR/converted/${i%.*}.mov"
+        else
+            ffmpeg -i "$i" -c:v prores_ks -profile:v 4444 -pix_fmt yuva444p10le -c:a pcm_s16be "$VIDDIR/converted/${i%.*}.mov"
+        fi
+    else
+        ffmpeg -i "$i" -c:v prores_ks -profile:v 3 -pix_fmt yuv422p10le -c:a pcm_s16be "$VIDDIR/converted/${i%.*}.mov"
+    fi
 }
 
+
+ConvertOne() {
+    Convert "$i"
+}
+
+
 ConvertAll() {
-    for i in *.mp4 *.mkv; do
-        ffmpeg -i "$i" -vcodec mjpeg -q:v 2 -acodec pcm_s16be -q:a 0 -f mov "$VIDDIR"/converted/${i%.*}.mov
+    shopt -s nullglob
+    for i in *.mp4 *.mkv *.avi *.m4v *.mov; do
+        Convert "$i"
     done
 }
+
 
 Export() {
     ffmpeg -i "$VIDDIR"/converted/"$i" -c:v libx264 -preset ultrafast -crf 0 "$VIDDIR"/exported/${i%.*}.mp4
@@ -87,7 +108,7 @@ while getopts ":c:Ce:EhR" OPTION; do
     case $OPTION in
         c)
             i=${OPTARG}
-            Convert
+            ConvertOne
             exit;;
         C)
             ConvertAll
