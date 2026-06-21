@@ -59,7 +59,7 @@ ConvertOne() {
 
 
 ConvertAll() {
-    shopt -s nullglob
+    shopt -s nullglob nocaseglob
     for i in *.mp4 *.mkv *.avi *.m4v *.mov; do
         Convert "$i"
     done
